@@ -2,28 +2,24 @@ package main
 
 import (
 	"context"
-	"time"
 
-	"github.com/sirupsen/logrus"
-	"github.com/umangshrestha/todo-app/database"
+	"github.com/umangshrestha/todo-app/src/config"
+	"github.com/umangshrestha/todo-app/src/database"
+	"github.com/umangshrestha/todo-app/src/logger"
 	"gorm.io/gorm"
 )
+
+var log = logger.NewLogger(config.AppLog)
 
 // App struct
 type App struct {
 	ctx context.Context
-	log *logrus.Logger
 	db  *gorm.DB
 }
 
 // NewApp creates a new App application struct
 func NewApp() *App {
 	return &App{}
-}
-
-func (a *App) setLogger(log *logrus.Logger) *App {
-	a.log = log
-	return a
 }
 
 func (a *App) setDB(db *gorm.DB) *App {
@@ -38,102 +34,72 @@ func (a *App) startup(ctx context.Context) {
 }
 
 func (a *App) Ping() bool {
+	log.Info("Ping")
 	return true
 }
 
-func (a *App) FindOneTodo(id uint) map[string]any {
-	a.log.Debugln("FindOneTodo:", id)
-	data, err := database.FindById(a.db, id)
+func (a *App) FindOneTodo(id uint) *database.Todo {
+	log.Info("FindOneTodo:", id)
+	data, err := database.FindTodoById(a.db, id)
 	if err != nil {
-		a.log.Fatalln("FindOne:", err)
+		log.Fatalln("FindOne:", err)
 	}
-	return data.ToMap()
-}
-
-func (a *App) CreateTodo(id uint, m map[string]any) map[string]any {
-	a.log.Debugln("CreateTodo:", m)
-	var todo *database.Todo
-	input := MapToInput[Input](&m, a.log)
-	if len(input.Title) == 0 {
-		a.log.Fatalln("No Title Found")
-	}
-	todo.Title = input.Title
-	if input.Completed {
-		todo.CompletedAt.Valid = true
-		todo.CompletedAt.Time = time.Now()
-	}
-	if input.Deleted {
-		todo.DeletedAt.Valid = true
-		todo.DeletedAt.Time = time.Now()
-	}
-	id, err := database.CreateTodo(a.db, todo)
-	if err != nil {
-		a.log.Fatalln("Create:", err)
-	}
-	return a.FindOneTodo(id)
-}
-
-func (a *App) UpdateTodo(id uint, m map[string]any) map[string]any {
-	a.log.Debugln("updateTodo:", id, m)
-	var todo *database.Todo
-	input := MapToInput[Input](&m, a.log)
-	if len(input.Title) > 0 {
-		todo.Title = input.Title
-	}
-	if input.Completed {
-		todo.CompletedAt.Valid = true
-		todo.CompletedAt.Time = time.Now()
-	} else {
-		todo.CompletedAt.Valid = false
-		todo.CompletedAt.Time = time.Time{}
-	}
-	if input.Deleted {
-		todo.DeletedAt.Valid = true
-		todo.DeletedAt.Time = time.Now()
-	} else {
-		todo.DeletedAt.Valid = false
-		todo.DeletedAt.Time = time.Time{}
-	}
-	err := database.UpdateTodoById(a.db, id, todo)
-	if err != nil {
-		a.log.Fatalln("Update:", err)
-	}
-	return a.FindOneTodo(id)
-}
-
-func (a *App) DelteTodo(id uint) map[string]any {
-	data := a.FindOneTodo(id)
-	err := database.DeleteTodoById(a.db, id)
-	if err != nil {
-		a.log.Fatalln("Delete:", err)
-	}
+	log.Debug(data)
 	return data
 }
 
-func (a *App) FindAllTodo(m map[string]any) []map[string]any {
-	input := MapToInput[Query](&m, a.log)
-	data, err := database.FindAll(a.db, input.Limit, input.Offset, input.Deleted, input.Completed)
-	a.log.Debug(input)
+func (a *App) CreateTodo(input database.Input) *database.Todo {
+	log.Debugln("CreateTodo:", input)
+	todo := input.ToTodo()
+	if len(input.Title) == 0 {
+		log.Fatalln("No Title Found")
+	}
+	id, err := database.CreateTodo(a.db, todo)
 	if err != nil {
-		a.log.Fatalln("FindAll:", err)
+		log.Fatalln("Create:", err)
 	}
-
-	arr := make([]map[string]any, len(data))
-	for i, v := range data {
-		arr[i] = v.ToMap()
-	}
-	return arr
+	return a.FindOneTodo(id)
 }
 
-func (a *App) CountTodo() map[string]int64 {
-	var result map[string]int64
-	var total, completed, deleted, todo int64
-	database.Count(a.db, &total, &completed, &deleted, &todo)
-	result["todo"] = todo
+func (a *App) UpdateTodo(id uint, input database.Input) *database.Todo {
+	log.Debugln("updateTodo:", id, input)
+	todo := input.ToTodo()
+	if len(input.Title) > 0 {
+		todo.Title = input.Title
+	}
+	err := database.UpdateTodoById(a.db, id, todo)
+	if err != nil {
+		log.Fatalln("Update:", err)
+	}
+	return a.FindOneTodo(id)
+}
 
-	result["completed"] = completed
-	result["total"] = total
+func (a *App) DeleteTodo(id uint) *database.Todo {
+	data := a.FindOneTodo(id)
+	err := database.DeleteTodoById(a.db, id)
+	if err != nil {
+		log.Fatalln("Delete:", err)
+	}
+	log.Debug(data)
+	return data
+}
 
-	result["deleted"] = deleted
-	return result
+func (a *App) FindAllTodo(query *database.Query) []*database.Todo {
+	log.Info("FindAll:", query)
+	data, err := database.FindAllTodo(a.db, query)
+	if err != nil {
+		log.Fatalln("FindAll:", err)
+	}
+	log.Debug(data)
+	return data
+}
+
+func (a *App) CountTodo() *database.Count {
+	log.Info("Count")
+	count, err := database.CountTodo(a.db)
+	if err != nil {
+		log.Fatalln("Count:", err)
+	}
+	log.Debug(count)
+	return count
 }

@@ -4,6 +4,7 @@ go 1.18
 
 require (
 	github.com/wailsapp/wails/v2 v2.4.1
+	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 	gorm.io/gorm v1.24.0
 )
 
@@ -38,7 +39,6 @@ require (
 	golang.org/x/net v0.7.0 // indirect
 	golang.org/x/sys v0.5.0 // indirect
 	golang.org/x/text v0.7.0 // indirect
-	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 	gorm.io/driver/sqlite v1.4.4
 )
 

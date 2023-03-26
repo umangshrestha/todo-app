@@ -6,12 +6,12 @@ export function CountTodo() {
   return window['go']['main']['App']['CountTodo']();
 }
 
-export function CreateTodo(arg1, arg2) {
-  return window['go']['main']['App']['CreateTodo'](arg1, arg2);
+export function CreateTodo(arg1) {
+  return window['go']['main']['App']['CreateTodo'](arg1);
 }
 
-export function DelteTodo(arg1) {
-  return window['go']['main']['App']['DelteTodo'](arg1);
+export function DeleteTodo(arg1) {
+  return window['go']['main']['App']['DeleteTodo'](arg1);
 }
 
 export function FindAllTodo(arg1) {

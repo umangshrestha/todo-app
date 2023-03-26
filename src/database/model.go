@@ -3,8 +3,6 @@ package database
 import (
 	"database/sql"
 	"time"
-
-	"gorm.io/gorm"
 )
 
 type Todo struct {
@@ -31,11 +29,4 @@ func (t *Todo) ToMap() map[string]interface{} {
 		out["deletedAt"] = t.DeletedAt.Time
 	}
 	return out
-}
-
-func Count(db *gorm.DB, total, completed, deleted, todo *int64) {
-	db.Model(&Todo{}).Where("completed_at IS NOT NULL").Where("deleted_at IS NOT NULL").Count(completed)
-	db.Model(&Todo{}).Where("deleted_at IS NULL").Where("completed_at IS NULL").Count(todo)
-	db.Model(&Todo{}).Where("deleted_at IS NOT NULL").Count(deleted)
-	db.Model(&Todo{}).Count(total)
 }

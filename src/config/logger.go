@@ -12,6 +12,5 @@ const (
 )
 
 const (
-	DbLog  = "db.log"
 	AppLog = "app.log"
 )
