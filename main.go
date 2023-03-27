@@ -2,6 +2,7 @@ package main
 
 import (
 	"embed"
+	"time"
 
 	"github.com/robfig/cron/v3"
 
@@ -27,8 +28,9 @@ func main() {
 	c := cron.New()
 	// Set up the cron job to run every day at midnight
 	c.AddFunc("0 0 * * *", func() {
-		log.Println("Running cron job to delete old data")
-		database.DeleteOldData(db)
+		cutoffDate := time.Now().AddDate(0, 0, -config.DelteOldData)
+		log.Infof("Deleting todos older than %s", cutoffDate)
+		database.DeleteOldData(db, cutoffDate)
 	})
 
 	app.setDB(db)

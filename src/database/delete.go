@@ -4,12 +4,10 @@ import (
 	"log"
 	"time"
 
-	"github.com/umangshrestha/todo-app/src/config"
 	"gorm.io/gorm"
 )
 
-func DeleteOldData(db *gorm.DB) {
-	cutoffDate := time.Now().AddDate(0, 0, -config.DelteOldData)
+func DeleteOldData(db *gorm.DB, cutoffDate time.Time) {
 	// Find all soft-deleted users that were deleted more than 100 days ago
 	var todos []Todo
 	result := db.Unscoped().Where("deleted_at < ?", cutoffDate).Find(&todos)
