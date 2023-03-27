@@ -18,7 +18,7 @@ function App() {
 
     return (
         <div className="app-container">
-            <Toolbar className="toolbar">
+            <Toolbar sx={{ height: '64px', backgroundColor: "#1e88e5" }}>
                 <IconButton aria-label="menu" edge="start" onClick={() => setDrawerOpen(!drawerOpen)} style={{ color: 'white' }}>
                     <MenuIcon />
                 </IconButton>

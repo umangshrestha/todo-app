@@ -32,6 +32,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.16 // indirect
 	github.com/pkg/browser v0.0.0-20210706143420-7d21f8c997e2 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
+	github.com/robfig/cron/v3 v3.0.1
 	github.com/samber/lo v1.27.1 // indirect
 	github.com/sirupsen/logrus v1.9.0
 	github.com/tkrajina/go-reflector v0.5.5 // indirect

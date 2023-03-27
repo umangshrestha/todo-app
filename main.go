@@ -3,6 +3,8 @@ package main
 import (
 	"embed"
 
+	"github.com/robfig/cron/v3"
+
 	"github.com/umangshrestha/todo-app/src/config"
 	"github.com/umangshrestha/todo-app/src/database"
 	"github.com/umangshrestha/todo-app/src/dialog"
@@ -22,6 +24,12 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+	c := cron.New()
+	// Set up the cron job to run every day at midnight
+	c.AddFunc("0 0 * * *", func() {
+		log.Println("Running cron job to delete old data")
+		database.DeleteOldData(db)
+	})
 
 	app.setDB(db)
 

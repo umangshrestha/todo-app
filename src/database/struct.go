@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/umangshrestha/todo-app/src/config"
 )
 
 type CreateInput struct {
@@ -32,7 +33,7 @@ type Query struct {
 
 func (t *Query) Validate() error {
 	if t.Limit == 0 {
-		t.Limit = 10
+		t.Limit = config.Limit
 	}
 	validate := validator.New()
 	return validate.Struct(t)
