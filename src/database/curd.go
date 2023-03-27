@@ -1,13 +1,17 @@
 package database
 
 import (
-	"github.com/umangshrestha/todo-app/src/config"
+	"time"
+
 	"gorm.io/gorm"
 )
 
 func CreateTodo(db *gorm.DB, todo *Todo) (uint, error) {
 	if db == nil {
 		return 0, ErrDBNil
+	}
+	if err := todo.Validate(); err != nil {
+		return 0, err
 	}
 	result := db.Create(todo)
 	if result.Error != nil {
@@ -16,35 +20,28 @@ func CreateTodo(db *gorm.DB, todo *Todo) (uint, error) {
 	return todo.ID, nil
 }
 
-func FindAllTodo(db *gorm.DB, q *Query) ([]*Todo, error) {
+func FindAllTodo(db *gorm.DB, q *Query) (*FindAllResponse, error) {
 	if db == nil {
 		return nil, ErrDBNil
 	}
-	var todos []*Todo
-	if q.Limit == 0 {
-		q.Limit = config.Limit
+	var response FindAllResponse
+	var todos []Todo
+	if err := q.Validate(); err != nil {
+		return nil, err
 	}
 	query := db.Order("created_at DESC").Limit(q.Limit).Offset(q.Offset)
 
 	if q.Deleted {
-		query = query.Where("deleted_at IS NOT NULL")
-	} else {
-		query = query.Where("deleted_at IS NULL")
+		query = query.Unscoped().Where("deleted_at IS NOT NULL")
 	}
 
-	if q.Completed {
-		query = query.Where("completed_at IS NOT NULL")
-	} else {
-		query = query.Where("completed_at IS NULL")
-	}
-
-	result := query.Find(&todos)
-
+	result := query.Find(&todos).Count(&response.Count)
 	if result.Error != nil {
 		return nil, result.Error
 	}
+	response.Data = todos
 
-	return todos, nil
+	return &response, nil
 }
 
 func FindTodoById(db *gorm.DB, id uint) (*Todo, error) {
@@ -56,36 +53,64 @@ func FindTodoById(db *gorm.DB, id uint) (*Todo, error) {
 	return &todo, nil
 }
 
-func UpdateTodoById(db *gorm.DB, id uint, updates *Todo) error {
+func UpdateTodoById(db *gorm.DB, id uint, updates map[string]any) error {
 	if db == nil {
 		return ErrDBNil
 	}
-	result := db.Model(&Todo{}).Where("id = ?", id).Updates(updates)
+	result := db.Model(&Todo{}).Where("id = ?", id)
+	if title, ok := updates["title"].(string); ok && len(title) > 0 {
+		result = result.Update("title", title)
+	}
+
+	if completed, ok := updates["completed"].(bool); ok {
+		if completed {
+			result = result.Update("completed_at", nil)
+		} else {
+			result = result.Update("completed_at", time.Now())
+		}
+	}
+
 	if result.Error != nil {
 		return result.Error
 	}
 	return nil
 }
 
-func DeleteTodoById(db *gorm.DB, id uint) error {
+func DeleteTodoById(db *gorm.DB, id uint, hardDelete bool) error {
 	if db == nil {
 		return ErrDBNil
 	}
-	result := db.Delete(&Todo{}, id)
+	var result *gorm.DB
+	if hardDelete {
+		result = db.Unscoped().Delete(&Todo{}, id)
+	} else {
+		result = db.Delete(&Todo{}, id)
+	}
 	if result.Error != nil {
 		return result.Error
 	}
 	return nil
 }
-
 func CountTodo(db *gorm.DB) (*Count, error) {
 	if db == nil {
 		return nil, ErrDBNil
 	}
 	var count Count
-	db.Model(&Todo{}).Where("completed_at IS NOT NULL").Where("deleted_at IS NOT NULL").Count(&count.Completed)
-	db.Model(&Todo{}).Where("deleted_at IS NULL").Where("completed_at IS NULL").Count(&count.Todo)
-	db.Model(&Todo{}).Where("deleted_at IS NOT NULL").Count(&count.Deleted)
-	db.Model(&Todo{}).Count(&count.Total)
+	err := db.Model(&Todo{}).Where("completed_at IS NOT NULL").Where("deleted_at IS NULL").Count(&count.Completed).Error
+	if err != nil {
+		return nil, err
+	}
+	err = db.Model(&Todo{}).Where("deleted_at IS NULL").Where("completed_at IS NULL").Count(&count.Todo).Error
+	if err != nil {
+		return nil, err
+	}
+	err = db.Unscoped().Model(&Todo{}).Where("deleted_at IS NOT NULL").Count(&count.Deleted).Error
+	if err != nil {
+		return nil, err
+	}
+	err = db.Model(&Todo{}).Count(&count.Total).Error
+	if err != nil {
+		return nil, err
+	}
 	return &count, nil
 }

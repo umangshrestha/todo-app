@@ -10,8 +10,8 @@ export function CreateTodo(arg1) {
   return window['go']['main']['App']['CreateTodo'](arg1);
 }
 
-export function DeleteTodo(arg1) {
-  return window['go']['main']['App']['DeleteTodo'](arg1);
+export function DeleteTodo(arg1, arg2) {
+  return window['go']['main']['App']['DeleteTodo'](arg1, arg2);
 }
 
 export function FindAllTodo(arg1) {

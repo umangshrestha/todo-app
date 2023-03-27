@@ -1,11 +1,11 @@
 import React from "react";
 import { Box, Button, Checkbox, FormControlLabel, FormGroup, TextField } from "@mui/material";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useFormik } from "formik";
-import { CreateTodo } from "../../../wailsjs/go/main/App";
 import * as Yup from 'yup';
 import styles from "./todoAddForm.module.css";
 import { SpinningLoader } from "../loader";
+import { useAddTodo } from "../../api/todo";
+import Alert from "@mui/material";
 
 const initialValues = {
     title: '',
@@ -15,35 +15,29 @@ const initialValues = {
 const validationSchema = Yup.object({
     title: Yup.string()
         .max(255, 'Must be 255 characters or less')
+        .min(5, 'Must be 5 characters or more')
         .required('Required')
 })
-
 
 interface Iprop {
     onClose: () => void
 }
 export const TodoAddForm = ({ onClose }: Iprop) => {
-    const queryClient = useQueryClient();
-    const { mutate, isLoading } = useMutation(async (formData: { title: string, completed: boolean }) => {
-        const data = await CreateTodo(formData);
-        formik.resetForm();
-        return data;
-    }, {
-        onSuccess: () => queryClient.invalidateQueries(['todos'])
-    });
+    const { addTodoFn, isLoading } = useAddTodo();
 
     const formik = useFormik({
         initialValues,
         validationSchema,
-        onSubmit: (formData) => {
-            mutate(formData);
+        onSubmit: async (formData: { title: string, completed: boolean }) => {
+            const data = await addTodoFn(formData)
+            formik.resetForm();
+            return data;
         }
     });
 
 
     return (
         <Box className={styles.inner}>
-            <SpinningLoader isLoading={isLoading} />
             <form autoComplete="off" onSubmit={formik.handleSubmit}>
                 <FormGroup>
                     <TextField
@@ -65,20 +59,8 @@ export const TodoAddForm = ({ onClose }: Iprop) => {
                         label="Completed"
                         labelPlacement="end" />
                 </FormGroup>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    type="submit"
-                    disabled={isLoading}>
-                    Submit
-                </Button>
-                <Button
-                    variant="contained"
-                    color="secondary"
-                    onClick={onClose}
-                    style={{ marginLeft: '10px' }}>
-                    Cancel
-                </Button>
+                <Button variant="contained" color="primary" type="submit" disabled={isLoading}> Submit </Button>
+                <Button variant="contained" color="secondary" onClick={onClose} style={{ marginLeft: '10px' }}> Cancel </Button>
             </form>
         </Box>
     );

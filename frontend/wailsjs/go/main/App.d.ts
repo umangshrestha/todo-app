@@ -6,7 +6,7 @@ export function CountTodo():Promise<database.Count>;
 
 export function CreateTodo(arg1:database.CreateInput):Promise<database.Todo>;
 
-export function DeleteTodo(arg1:number):Promise<database.Todo>;
+export function DeleteTodo(arg1:number,arg2:boolean):Promise<database.Todo>;
 
 export function FindAllTodo(arg1:any):Promise<database.FindAllResponse>;
 

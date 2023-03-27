@@ -4,7 +4,7 @@ export namespace database {
 	    todo: number;
 	    completed: number;
 	    deleted: number;
-	    Total: number;
+	    total: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new Count(source);
@@ -15,7 +15,7 @@ export namespace database {
 	        this.todo = source["todo"];
 	        this.completed = source["completed"];
 	        this.deleted = source["deleted"];
-	        this.Total = source["Total"];
+	        this.total = source["total"];
 	    }
 	}
 	export class CreateInput {
@@ -40,8 +40,6 @@ export namespace database {
 	    // Go type: time
 	    updatedAt: any;
 	    // Go type: sql
-	    deletedAt?: any;
-	    // Go type: sql
 	    completedAt?: any;
 	
 	    static createFrom(source: any = {}) {
@@ -54,7 +52,6 @@ export namespace database {
 	        this.title = source["title"];
 	        this.createdAt = this.convertValues(source["createdAt"], null);
 	        this.updatedAt = this.convertValues(source["updatedAt"], null);
-	        this.deletedAt = this.convertValues(source["deletedAt"], null);
 	        this.completedAt = this.convertValues(source["completedAt"], null);
 	    }
 	
@@ -112,7 +109,6 @@ export namespace database {
 	    limit?: number;
 	    offset?: number;
 	    deleted?: boolean;
-	    completed?: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new Query(source);
@@ -123,7 +119,6 @@ export namespace database {
 	        this.limit = source["limit"];
 	        this.offset = source["offset"];
 	        this.deleted = source["deleted"];
-	        this.completed = source["completed"];
 	    }
 	}
 
