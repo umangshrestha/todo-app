@@ -11,7 +11,6 @@ import { TodoAddForm } from "./component/todoAddForm";
 import { Link, } from 'react-router-dom';
 import { DrawerItems } from './config/drawer';
 
-
 function App() {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [open, setOpen] = useState(false);
@@ -38,10 +37,7 @@ function App() {
                     ))}
                 </List>
             </Drawer>
-            <Dialog open={open} onClose={() => setOpen(false)}>
-                <DialogTitle>Add Todo</DialogTitle>
-                <TodoAddForm onClose={() => setOpen(false)} />
-            </Dialog>
+            <TodoAddForm open={open} onClose={() => setOpen(false)} />
         </div>
     )
 }

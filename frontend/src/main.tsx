@@ -10,6 +10,7 @@ import './style.css'
 import App from './App'
 import { HashRouter, Route, Routes } from 'react-router-dom';
 import { DrawerItems } from './config/drawer';
+import queryClient from './api/todo';
 
 const container = document.getElementById('root')
 
@@ -19,30 +20,11 @@ const Main = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [message, setMessage] = useState("");
     const [serverity, setServerity] = useState<"success" | "error" | "warning" | "info">("success");
-    const [open, setOpen] = useState(false);
-
-
-    const onError = (error: any) => {
-        setMessage(error?.message || "Oops!! Something went wrong");
-        setServerity("error");
-        setOpen(true);
-    }
-
-    const onSettled = () => {
-        setIsLoading(false);
-    }
-
-    const queryClient = new QueryClient({
-        defaultOptions: {
-            queries: { onError, onSettled },
-            mutations: { onError, onSettled }
-        }
-    });
 
     return (
         <HashRouter basename={"/"}>
             <LoaderContext.Provider value={{ isLoading, setIsLoading }}>
-                <NotificationContext.Provider value={{ message, setMessage, serverity, setServerity, open, setOpen }}>
+                <NotificationContext.Provider value={{ message, setMessage, serverity, setServerity }}>
                     <QueryClientProvider client={queryClient}>
                         <App />
                         <Routes>

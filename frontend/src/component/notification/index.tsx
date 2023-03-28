@@ -4,11 +4,12 @@ import { useContext } from "react";
 import { NotificationContext } from "./context";
 
 export const Notification = () => {
-    const { serverity, message, open, setOpen } = useContext(NotificationContext);
+    const { serverity, message, setMessage } = useContext(NotificationContext);
 
+    const onClose = () => setMessage('');
     return (
-        <Snackbar open={open} autoHideDuration={6000} onClose={() => setOpen(false)} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
-            <Alert onClose={() => setOpen(false)} severity={serverity} sx={{ width: '100%' }}>
+        <Snackbar open={message !== ''} autoHideDuration={6000} onClose={onClose} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+            <Alert onClose={onClose} severity={serverity} sx={{ width: '100%' }}>
                 {message}
             </Alert>
         </Snackbar>

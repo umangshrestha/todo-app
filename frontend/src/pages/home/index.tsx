@@ -3,10 +3,9 @@ import Alert from "@mui/material/Alert";
 import { useCountTodo } from "../../api/todo";
 
 
-// use mui to create a big box with count of total, todo, completed, deleted
-
 const Home = () => {
     const { data, isLoading, error } = useCountTodo();
+
     return (
         <>
             <h1>Home</h1>
