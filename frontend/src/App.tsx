@@ -3,14 +3,17 @@ import './App.css';
 import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
 import ListItem from '@mui/material/ListItem';
-import { Button, ListItemIcon, ListItemText, Typography } from '@mui/material';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 import { Drawer } from '@mui/material';
 import Menu from '@mui/icons-material/Menu';
 import Close from '@mui/icons-material/Close';
-import { TodoAddForm } from "./component/todoAddForm";
+import { TodoAddForm } from "./component/TodoAddForm";
 import { Link, Route, Routes, useLocation, } from 'react-router-dom';
-import { DrawerItems } from './config/drawer';
+import { routes } from './pages';
 
 function App() {
     const [drawerOpen, setDrawerOpen] = useState(false);
@@ -37,7 +40,7 @@ function App() {
             <Drawer anchor="left" open={drawerOpen} onClose={() => setDrawerOpen(false)}>
                 <List className="list">
                     <ListItem sx={{ height: '64px' }} />
-                    {DrawerItems.map((item, index) => (
+                    {routes.map((item, index) => (
                         <ListItem key={index} component={Link} to={item.link} onClick={() => setDrawerOpen(false)} className="list-item">
                             <ListItemIcon>{item.icon} </ListItemIcon>
                             <ListItemText>{item.name}</ListItemText>
@@ -50,7 +53,7 @@ function App() {
                 {location.pathname === "/" ? "Todo List" : location.pathname.slice(1).toUpperCase()}
             </Typography>
             <Routes>
-                {DrawerItems.map((item, index) => <Route key={index} path={item.link} element={item.element} />)}
+                {routes.map((item, index) => <Route key={index} path={item.link} element={item.element} />)}
             </Routes>
         </>
     )

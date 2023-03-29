@@ -1,7 +1,6 @@
 package database
 
 import (
-	"database/sql"
 	"time"
 
 	"github.com/go-playground/validator/v10"
@@ -14,27 +13,11 @@ type Todo struct {
 	CreatedAt   time.Time      `gorm:"not null;default:current_timestamp" json:"createdAt"`
 	UpdatedAt   time.Time      `gorm:"autoUpdateTime:true" json:"updatedAt"`
 	DeletedAt   gorm.DeletedAt `gorm:"index" json:"-"`
-	CompletedAt sql.NullTime   `gorm:"type:TIMESTAMP NULL" json:"completedAt,omitempty"`
+	IsCompleted bool           `gorm:"not null;default:false" json:"isCompleted"`
+	CompletedAt time.Time      `gorm:"default:null" json:"completedAt"`
 }
 
 func (t *Todo) Validate() error {
 	validate := validator.New()
 	return validate.Struct(t)
-}
-
-func (t *Todo) ToMap() map[string]interface{} {
-	out := map[string]interface{}{
-		"id":        t.ID,
-		"title":     t.Title,
-		"createdAt": t.CreatedAt,
-		"updatedAt": t.UpdatedAt,
-	}
-	if t.CompletedAt.Valid {
-		out["completedAt"] = t.CompletedAt.Time
-	}
-
-	if t.DeletedAt.Valid {
-		out["deletedAt"] = t.DeletedAt.Time
-	}
-	return out
 }

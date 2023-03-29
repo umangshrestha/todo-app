@@ -2,8 +2,8 @@ import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/re
 import { useContext } from "react";
 import { CountTodo, CreateTodo, DeleteTodo, FindAllTodo, UpdateTodo } from "../../wailsjs/go/main/App";
 import { database } from "../../wailsjs/go/models";
-import { LoaderContext } from "../component/loader/context";
-import { NotificationContext } from "../component/notification/context";
+import { LoaderContext } from "../component/Loader/context";
+import { NotificationContext } from "../component/Notification/context";
 
 const queryClient = new QueryClient();
 export default queryClient;
@@ -13,7 +13,7 @@ export const useUpdateTodo = () => {
     const { setMessage, setServerity } = useContext(NotificationContext);
 
     const { mutate: updateTodoFn, isLoading, error } = useMutation({
-        mutationFn: ({ id, ...val }: { id: number, title: string, completed: boolean }) => {
+        mutationFn: ({ id, ...val }: { id: number, title?: string, isCompleted?: boolean }) => {
             setIsLoading(true);
             return UpdateTodo(id, val)
         },
@@ -86,13 +86,12 @@ export const useDeleteTodo = ({ hardDelete = false }: { hardDelete: boolean }) =
     return { deleteTodoFn, isLoading, error }
 }
 
-export const useFindAllTodo = (page: number) => {
-    const limit = 10;
+export const useFindAllTodo = ({ page, limit }: { page: number, limit: number }) => {
     const { setIsLoading } = useContext(LoaderContext);
     const { setMessage, setServerity } = useContext(NotificationContext);
 
     const { data, isLoading, error } = useQuery(
-        ["todos", { page }],
+        ["todos", { page, limit }],
         () => {
             setIsLoading(true);
             return FindAllTodo({ offset: page * limit })

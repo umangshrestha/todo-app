@@ -1,7 +1,13 @@
 import React from 'react';
 import GitHubIcon from '@mui/icons-material/GitHub';
-import { Avatar, Card, CardActions, CardContent, CardHeader, IconButton, Typography } from '@mui/material';
 import { Link } from 'react-router-dom';
+import Avatar from '@mui/material/Avatar';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import CardHeader from '@mui/material/CardHeader';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
 
 const AboutMe = () => (
     <Card sx={{ maxWidth: 345, margin: 'auto', marginTop: '20px' }}>

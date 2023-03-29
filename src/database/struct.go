@@ -1,28 +1,25 @@
 package database
 
 import (
-	"time"
-
 	"github.com/go-playground/validator/v10"
 	"github.com/umangshrestha/todo-app/src/config"
 )
 
 type CreateInput struct {
-	Title     string `json:"title"`
-	Completed bool   `json:"completed,omitempty"`
+	Title       string `json:"title"`
+	IsCompleted bool   `json:"isCompleted,omitempty"`
 }
 
-func (i *CreateInput) ToTodo() *Todo {
-	var todo Todo
-	todo.Title = i.Title
-	if i.Completed {
-		todo.CompletedAt.Valid = true
-		todo.CompletedAt.Time = time.Now()
-	} else {
-		todo.CompletedAt.Valid = false
-		todo.CompletedAt.Time = time.Time{}
+func (t *CreateInput) Validate() error {
+	validate := validator.New()
+	return validate.Struct(t)
+}
+
+func (t *CreateInput) Todo() Todo {
+	return Todo{
+		Title:       t.Title,
+		IsCompleted: t.IsCompleted,
 	}
-	return &todo
 }
 
 type Query struct {

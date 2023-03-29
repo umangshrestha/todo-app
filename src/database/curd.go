@@ -62,11 +62,11 @@ func UpdateTodoById(db *gorm.DB, id uint, updates map[string]any) error {
 		result = result.Update("title", title)
 	}
 
-	if completed, ok := updates["completed"].(bool); ok {
+	if completed, ok := updates["isCompleted"].(bool); ok {
 		if completed {
-			result = result.Update("completed_at", nil)
+			result = result.Update("completed_at", time.Now()).Update("is_completed", true)
 		} else {
-			result = result.Update("completed_at", time.Now())
+			result = result.Update("completed_at", nil).Update("is_completed", false)
 		}
 	}
 

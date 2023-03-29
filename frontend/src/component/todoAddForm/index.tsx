@@ -1,27 +1,35 @@
 import React from "react";
-import { Box, Button, Checkbox, Dialog, DialogTitle, FormControlLabel, FormGroup, TextField } from "@mui/material";
 import { useFormik } from "formik";
 import styles from "./todoAddForm.module.css";
 import { useAddTodo } from "../../api/todo";
 import { database } from "../../../wailsjs/go/models";
 import { validationSchema } from "./validationSchema";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import FormGroup from "@mui/material/FormGroup";
+import TextField from "@mui/material/TextField";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
 
 const initialValues = {
     title: '',
-    completed: false,
+    isCompleted: false,
 }
 
 interface Iprop {
     onClose: () => void
     open: boolean
 }
+
 export const TodoAddForm = ({ onClose, open }: Iprop) => {
     const { addTodoFn, isLoading } = useAddTodo();
 
     const formik = useFormik({
         initialValues,
         validationSchema,
-        onSubmit: async (formData: database.CreateInput) => {
+        onSubmit: (formData: database.CreateInput) => {
             const data = addTodoFn(formData)
             formik.resetForm();
             return data;
@@ -47,9 +55,9 @@ export const TodoAddForm = ({ onClose, open }: Iprop) => {
                             control={<Checkbox
                                 inputProps={{ 'aria-label': 'Checkbox demo' }}
                                 color="primary"
-                                checked={formik.values.completed}
+                                checked={formik.values.isCompleted}
                                 onChange={formik.handleChange}
-                                name="completed" />}
+                                name="isCompleted" />}
                             label="Completed"
                             labelPlacement="end" />
                     </FormGroup>

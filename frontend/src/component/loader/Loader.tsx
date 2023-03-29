@@ -1,9 +1,9 @@
 import React, { useContext } from "react";
 import style from './loader.module.css';
-import { CircularProgress } from "@mui/material";
 import { LoaderContext } from "./context";
+import CircularProgress from '@mui/material/CircularProgress';
 
-export const SpinningLoader = () => {
+export const Loader = () => {
     const { isLoading } = useContext(LoaderContext);
 
     return (

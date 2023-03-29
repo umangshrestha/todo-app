@@ -45,8 +45,8 @@ func (a *App) FindOneTodo(id uint) database.Todo {
 
 func (a *App) CreateTodo(input database.CreateInput) database.Todo {
 	log.Debugf("CreateTodo: %+v\n", input)
-	todo := input.ToTodo()
-	id, err := database.CreateTodo(a.db, todo)
+	todo := input.Todo()
+	id, err := database.CreateTodo(a.db, &todo)
 	if err != nil {
 		log.Fatalln("Create:", err)
 	}

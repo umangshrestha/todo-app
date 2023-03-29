@@ -20,7 +20,7 @@ export namespace database {
 	}
 	export class CreateInput {
 	    title: string;
-	    completed?: boolean;
+	    isCompleted?: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new CreateInput(source);
@@ -29,7 +29,7 @@ export namespace database {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.title = source["title"];
-	        this.completed = source["completed"];
+	        this.isCompleted = source["isCompleted"];
 	    }
 	}
 	export class Todo {
@@ -39,8 +39,9 @@ export namespace database {
 	    createdAt: any;
 	    // Go type: time
 	    updatedAt: any;
-	    // Go type: sql
-	    completedAt?: any;
+	    isCompleted: boolean;
+	    // Go type: time
+	    completedAt: any;
 	
 	    static createFrom(source: any = {}) {
 	        return new Todo(source);
@@ -52,6 +53,7 @@ export namespace database {
 	        this.title = source["title"];
 	        this.createdAt = this.convertValues(source["createdAt"], null);
 	        this.updatedAt = this.convertValues(source["updatedAt"], null);
+	        this.isCompleted = source["isCompleted"];
 	        this.completedAt = this.convertValues(source["completedAt"], null);
 	    }
 	
