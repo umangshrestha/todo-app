@@ -4,9 +4,9 @@ import { Avatar, Card, CardActions, CardContent, CardHeader, IconButton, Typogra
 import { Link } from 'react-router-dom';
 
 const AboutMe = () => (
-    <Card>
+    <Card sx={{ maxWidth: 345, margin: 'auto', marginTop: '20px' }}>
         <CardHeader
-            avatar={<Avatar alt="Profile picture of Umang Shrestha" src="https://example.com/avatar.png" />}
+            avatar={<Avatar alt="Umang Shrestha profile picture" src="https://example.com/avatar.png" />}
             title="Umang Shrestha"
             subtitle="https://github.com/umangshrestha"
         />

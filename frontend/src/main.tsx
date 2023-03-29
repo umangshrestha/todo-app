@@ -8,8 +8,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import './style.css'
 import App from './App'
-import { HashRouter, Route, Routes } from 'react-router-dom';
-import { DrawerItems } from './config/drawer';
+import { HashRouter } from 'react-router-dom';
 import queryClient from './api/todo';
 
 const container = document.getElementById('root')
@@ -22,14 +21,11 @@ const Main = () => {
     const [serverity, setServerity] = useState<"success" | "error" | "warning" | "info">("success");
 
     return (
-        <HashRouter basename={"/"}>
+        <HashRouter basename="/">
             <LoaderContext.Provider value={{ isLoading, setIsLoading }}>
                 <NotificationContext.Provider value={{ message, setMessage, serverity, setServerity }}>
                     <QueryClientProvider client={queryClient}>
                         <App />
-                        <Routes>
-                            {DrawerItems.map((item, index) => <Route key={index} path={item.link} element={item.element} />)}
-                        </Routes>
                         <SpinningLoader />
                         <Notification />
                         <ReactQueryDevtools initialIsOpen={false} />
